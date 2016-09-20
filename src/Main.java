@@ -9,10 +9,11 @@ public class Main {
 		
 		
 		// ---------   test init and team creation -----------
+	
 		
-		Helper hlp = new Helper();
-		allTeams=hlp.createTeams(); //create teams
-		hlp.createMatchList(allTeams); //create match list
+		
+		GUI gui = new GUI("Java Ball"); // create a new interface object
+	    gui.initialize();
 		
 
 	}
