@@ -1,16 +1,6 @@
-/**
- * Holds the main GUI functionality:
- * 
- *  - Load a TeamsIn file
- *  - Load a Results file
- *  - 
- * 
- * **/
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
@@ -19,7 +9,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-public class GUI extends JFrame {
+public class guiBK extends JFrame {
     
     /* Frame width and height */
     private int appWidth;
@@ -27,27 +17,27 @@ public class GUI extends JFrame {
     
     /* LAYOUTS *****/
     GridLayout headerLayout = new GridLayout(1,1);
-    //GridLayout QuantityLayout = new GridLayout(1,2);
+    GridLayout QuantityLayout = new GridLayout(1,2);
     GridLayout boxSizeLayout = new GridLayout(3,2);
-    //GridLayout gradeOfCardLayout = new GridLayout(1,2);
-    //GridLayout PrintingLayout = new GridLayout(2,2);
-    //GridLayout ReinforcingLayout = new GridLayout(2,2);
-    //GridLayout SealableLayout = new GridLayout(1,2);
+    GridLayout gradeOfCardLayout = new GridLayout(1,2);
+    GridLayout PrintingLayout = new GridLayout(2,2);
+    GridLayout ReinforcingLayout = new GridLayout(2,2);
+    GridLayout SealableLayout = new GridLayout(1,2);
     GridLayout Actions1Layout = new GridLayout(1,2);
-    GridLayout resultLayout = new GridLayout(1,1);
+    GridLayout StatusLayout = new GridLayout(1,1);
     GridLayout Actions2Layout = new GridLayout(1,2);
     
     /* ---------------------- GUI Components ------------------------ */
     
     /* LABELS *****/
-    private JLabel lblCustName,lbHeader,lblBoxSize,lblGradeOfCard,
+    private JLabel lblCustName,lblOrderDetails,lblBoxSize,lblGradeOfCard,
                                lblPrinting,lblTypeOfPrint,lblReinforcing,
                                lblSealable,lblStatus,lblWidth,lblHeight,
                                lblLength,lblTypeOfPrinting,lblPlaceHolder,
                                lblChooseQuantity;
     
     /* BUTTONS *****/
-    private JButton loadTeams,exitButton,calculateButton,OrderButton; 
+    private JButton ConfirmOrderButton,exitButton,calculateButton,OrderButton; 
     
     /* FONTS - COLORS *****/
     private Font TextFont = new Font("serif", Font.BOLD, 12);
@@ -71,7 +61,7 @@ public class GUI extends JFrame {
     private JList LstReinforcing;
     
     /* TEXT AREA ****/
-    private TextArea textAreaResults;
+    private TextArea textAreaStatus;
     private String newLine = "\n";
     
     /* BORDERS ****/
@@ -101,6 +91,9 @@ public class GUI extends JFrame {
     private int selection,confirmation;
     private Dimension screenSize,frameSize;
     private boolean dataStatus,firstOrder = true;
+    private Order order;
+    private FlexBox box;
+    private OrderItem orderDetail; 
     private double boxCost,orderCost;
     
     
@@ -113,9 +106,8 @@ public class GUI extends JFrame {
        
     }
     
-    /**
-     * gets the dimensions of the user's screen and then
-     * calculates and adjusts the size of the Jframe 
+    /* gets the dimensions of the user's screen and then
+     * calculates and ajusts the size of the Jframe 
      */
     private void setWindow(){
         
@@ -147,43 +139,61 @@ public class GUI extends JFrame {
   
     }
     
-    /**
-     * Initalise  
-     */
-    protected void init(){
-    	
-    	
-    	/* create the teams and the match list */
-    	Helper hlp = new Helper(); 	
-    	/* create the GUI */
-    	createGui();
-    	/* show initial results */
-    	showResults(hlp.createMatchList());
-    	
-    	
-    }
     
     /**
-     * Creates the GUI  
+     * The basic method of the GUI class that will create the GUI populate it 
+     * with widjets and conponents and handle all events as well the actions that will
+     * respond to these events.
      */
     @SuppressWarnings("static-access")
-     protected void createGui(){
+     protected void initialize(){
         
-    	
-         
-         String[] Labels = {" Results Processing of JavaBall Matches","Box Size","Width","Height","Length","Grade Of Card",
+         String[] GradeOfCard = {null,"1","2","3","4"};
+         String[] Labels = {"Order Details","Box Size","Width","Height","Length","Grade Of Card",
                                "Printing","Yes","No","Type Of Printing","Choose Reinforcing",
                                "Sealable","Status","Customer Name"," ","Choose Box Quantity"};
          String[] Printing = {null,"1","2","3"};
-         
+         String[] Reinforcing = {"Reinforced Bottom","Reinforced Corners",};
         
+
+
         //
-        // Create GUI Components - Buttons
+        // Create GUI Componentns - Sliders
+        //
+
+        /* Choose Box Quantity Slider */
+        SlChooseQuantity = new JSlider(JSlider.HORIZONTAL,
+                                     boxMin,boxMax,boxInit);
+
+        /* get initial values */
+        boxQuantity = SlChooseQuantity.getValue();
+        SlChooseQuantity.addChangeListener(new ChangeListener(){
+            public void stateChanged ( ChangeEvent e ){
+
+                try{
+                    boxQuantity = SlChooseQuantity.getValue();
+                    //System.out.println("->"+boxQuantity);
+                    txtQuantity.setText(Integer.toString(SlChooseQuantity.getValue()));
+
+                }
+                catch(Exception warning){
+                    status = warning.toString();
+                    textAreaStatus.append(status + newLine);
+                }
+
+
+            }
+        });
+
+
+
+        //
+        // Create GUI Componentns - Buttons
         //
         
         /* Exit  Button */
         exitButton = new JButton("Exit");
-        //Add the action Listener - and the code that will handle the events
+        //Add the action Listener - and the code that will hamdle the events
         exitButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 dispose();
@@ -194,7 +204,7 @@ public class GUI extends JFrame {
         
        /* Calculate  Button */
         calculateButton = new JButton("Calculate");
-        //The action Listener - and the code that will handle the events
+        //The action Listener - and the code that will hamdle the events
         calculateButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                
@@ -224,13 +234,13 @@ public class GUI extends JFrame {
         } );
         
         /* Confirm Order  Button */
-        loadTeams = new JButton("Confirm Order");
-        loadTeams.setEnabled(false);
+        ConfirmOrderButton = new JButton("Confirm Order");
+        ConfirmOrderButton.setEnabled(false);
         //The action Listener - and the code that will hamdle the events
-        loadTeams.addActionListener(new ActionListener(){
+        ConfirmOrderButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 
-                if (loadTeams.isEnabled()){
+                if (ConfirmOrderButton.isEnabled()){
                     
                     /* get final confirmation */
                         confirmation = JOptionPane.showConfirmDialog(null,
@@ -243,33 +253,237 @@ public class GUI extends JFrame {
                         if (confirmation == 0){
                             
                             firstOrder = true;
-                                                 
-                        }       
-                }                     
+                            
+                            
+                            
+                        }
+                    
+
+                    
+                }
+                     
             } 
-            
         } );
-                 
+        
+        //
+        // Create GUI Compnents - Combo Boxes
+        //
+        
+        /* Choose CARD GRADE Combo Box */
+        chooseGrade = new JComboBox(GradeOfCard);
+        chooseGrade.setSelectedIndex(0);
+        //Add the action Listener - and the code that will hamdle the events
+        chooseGrade.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+
+                //System.out.println(chooseGrade.getSelectedItem());
+            }
+        } );
+        
+        
+        /* Choose PRINTING Combo Box */
+        choosePrinting = new JComboBox(Printing);
+        choosePrinting.setSelectedIndex(0);
+        choosePrinting.setVisible(false);
+        //Add the action Listener - and the code that will hamdle the events
+        choosePrinting.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                
+            }
+        } );
+        
+        
+        
+        //
+        // Create GUI Componentns - RADIO BUTTONS
+        //
+        
+        /* Radio Button YES for the Choose Printing Panel */
+        radioYesP = new JRadioButton("YES"); //create the radio button
+        radioYesP.setMnemonic(KeyEvent.VK_Y); 
+        radioYesP.setActionCommand("Yes"); //set the command
+        radioYesP.setSelected(false); // select it by default
+        //Add the action Listener - and the code that will hamdle the events
+        radioYesP.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+
+
+                /* if the user chose to have Printing then enable the combo box
+                 * to choose the type of printing */
+                if ( radioYesP.isSelected() )
+                    choosePrinting.setVisible(true);
+                else
+                    choosePrinting.setVisible(false);
+                
+            }
+        } );
+       
+        
+        /* Radio Button NO for the Choose Printing Panel */
+        radioNoP = new JRadioButton("No"); //create the radio button
+        radioNoP.setMnemonic(KeyEvent.VK_N); 
+        radioNoP.setActionCommand("No"); //set the command
+        radioNoP.setSelected(true); // select it by default
+        //Add the action Listener - and the code that will hamdle the events
+        radioNoP.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+
+                if ( radioNoP.isSelected() )
+                    choosePrinting.setVisible(false);
+                else
+                    choosePrinting.setVisible(true);
+                
+            }
+        } );
+
+        /* Radio Button NO for the Choose Reinforcing Panel */
+        radioNoR = new JRadioButton("No"); //create the radio button
+        radioNoR.setMnemonic(KeyEvent.VK_N);
+        radioNoR.setActionCommand("No"); //set the command
+        radioNoR.setSelected(true); // select it by default
+        //The action Listener - and the code that will hamdle the events
+        radioNoR.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+
+                if ( radioNoR.isSelected() ){
+                    
+                    LstReinforcing.setVisible(false);
+                    reinforcment = false;
+                    reinforcedBottom = false;
+                    reinforcedCorners = false;
+                }
+                else{
+                    LstReinforcing.setVisible(true);
+                    //reinforcment = true;
+                }
+
+            }
+        } );
+
+        /* Radio Button YES for the Choose Reinforcing Panel */
+        radioYesR = new JRadioButton("YES"); //create the radio button
+        radioYesR.setMnemonic(KeyEvent.VK_Y);
+        radioYesR.setActionCommand("Yes"); //set the command
+        radioYesR.setSelected(false); // select it by default
+        //The action Listener - and the code that will hamdle the events
+        radioYesR.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+
+
+                /* if the user chose to have Reinforcing then enable the list
+                 * to choose the type of reinforcing */
+                if ( radioYesR.isSelected() ){
+                    LstReinforcing.setVisible(true);
+                    reinforcment = true;
+                }
+                else{
+                    LstReinforcing.setVisible(false);
+                    //reinforcment = false;
+                }
+                    
+
+            }
+        } );
+
+
+        /* Radio Button YES for the Choose Sealable Panel */
+        radioYesS = new JRadioButton("YES"); //create the radio button
+        radioYesS.setMnemonic(KeyEvent.VK_Y); 
+        radioYesS.setActionCommand("Yes"); //set the command
+        radioYesS.setSelected(false);
+        //Add the action Listener - and the code that will hamdle the events
+        radioYesS.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                
+            }
+        } );
+       
+        
+        /* Radio Button NO for the Choose Sealable Panel */
+        radioNoS = new JRadioButton("No"); //create the radio button
+        radioNoS.setMnemonic(KeyEvent.VK_N); 
+        radioNoS.setActionCommand("No"); //set the command
+        radioNoS.setSelected(true); // select it by default
+        //Add the action Listener - and the code that will hamdle the events
+        radioNoS.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                
+            }
+        } );
+        
+        
+        /*
+         *   Radio Button Groups
+         */
+        
+        // the group for the choose Printing Panel
+        groupForPrinting = new ButtonGroup();
+        groupForPrinting.add(radioYesP);
+        groupForPrinting.add(radioNoP);
+        
+        // the group for the choose Sealable Panel
+        groupForSealable = new ButtonGroup();
+        groupForSealable.add(radioYesS);
+        groupForSealable.add(radioNoS);
+
+        // the group for the choose Reinforcing Panel
+        groupForReinforcing = new ButtonGroup();
+        groupForReinforcing.add(radioYesR);
+        groupForReinforcing.add(radioNoR);
+        
+
+        //
+        // Create GUI Componentns - Lists
+        //
+        
+        /* List for choosing type of reinforcing */
+        LstReinforcing = new JList(Reinforcing); //create the list
+        LstReinforcing.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        LstReinforcing.setVisible(false);
+        /* and the Selection Listener */
+        LstReinforcing.addListSelectionListener(new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+            
+            selection = LstReinforcing.getSelectedIndex();
+            System.out.println("Selection from List's event-> "+selection);
+
+                
+         }
+        } );
+
+        
         //
         // Create GUI Componentns - Text Area
         //
-        textAreaResults = new TextArea(5, 100);
-        textAreaResults.setBackground(Color.WHITE);
-        textAreaResults.setEditable(false);
+        textAreaStatus = new TextArea(5, 30);
+        textAreaStatus.setBackground(Color.WHITE);
+        textAreaStatus.setEditable(false);
         
         //add a scrollbar
-        JScrollPane scrollPane = new JScrollPane(textAreaResults);
+        JScrollPane scrollPane = new JScrollPane(textAreaStatus);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
          
-        textAreaResults.setFont( new Font("Serif",Font.ITALIC, 16));
+        textAreaStatus.setFont( new Font("Serif",Font.ITALIC, 16));
         //textAreaStatus.setLineWrap(true);
         //textAreaStatus.setWrapStyleWord(true);
-        /* ------------------------------------------------------- */
+
+        try{
+            textAreaStatus.append("Welcome to the FlexBox Ordering Sytem" + newLine);
+            textAreaStatus.append( newLine );
+        }
+        catch(Exception e){
+            msg.showMessageDialog(null,"There was an internal error",
+                                  "Error",msg.ERROR_MESSAGE);
+        }
         
-        //
-        //  Create - Populate the JPanels
-        //
+        /**
+         *  Create - Populate the JPanels
+         *
+         *  All the components will be added to JPanels - assosiated with certain
+         *  layouts - and then added to the Frame 
+         *
+         */
         
          /* Panel Header */
          JPanel panelHeader = new JPanel(); //create panel
@@ -277,26 +491,122 @@ public class GUI extends JFrame {
          headerLayout.setVgap(10);
          panelHeader.setLayout(headerLayout);
          
-         lbHeader = new JLabel(Labels[0]);
-         lbHeader.setFont(headerFont1);
-         panelHeader.add(lbHeader);
+         lblOrderDetails = new JLabel(Labels[0]);
+         lblOrderDetails.setFont(headerFont1);
+         panelHeader.add(lblOrderDetails);
          /* ----------------------------------------------------- */
-     
-         /* Panel Results */
-         JPanel panelResults = new JPanel();
-         resultLayout.setVgap(3);
-         resultLayout.setHgap(10);
-         panelResults.setLayout(resultLayout);
-         //set the Border and Title 
+
+
+         /* Panel Choose Box Quantity  */
+         JPanel panelQuantity = new JPanel(); //create panel
+         QuantityLayout.setHgap(3);
+         QuantityLayout.setVgap(10);
+         panelQuantity.setLayout(QuantityLayout);
+         //set the Border and Title
          title =  BorderFactory.createTitledBorder(blackline,
-                                              "JavaBall Matches & Results",TitledBorder.TOP,
+                                              "Box Quantity",TitledBorder.LEFT,
                                                TitledBorder.TOP,headerFont2
                                                                 ,titleFColor);
-         panelResults.setBorder(title);
-         JScrollPane scrollPane2 = new JScrollPane(panelResults);
-         panelResults.add(textAreaResults);
+
+         panelQuantity.setBorder(title); //set the title of the layout
+         panelQuantity.add(lblChooseQuantity = new JLabel(Labels[15]));
+         panelQuantity.add(SlChooseQuantity); // add the slider to choose quantity
+         panelQuantity.add(txtQuantity = new JTextField());
+         /* ----------------------------------------------------- */
+
+
+
+         /* Panel Box Size  */
+         JPanel panelBoxSize = new JPanel(); //create panel
+         boxSizeLayout.setHgap(10);
+         boxSizeLayout.setVgap(3);
+         panelBoxSize.setLayout(boxSizeLayout); 
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Box Size",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         panelBoxSize.setBorder(title);
+         panelBoxSize.add(lblWidth = new JLabel(Labels[2]));
+         panelBoxSize.add(txtWidth = new JTextField());
+         panelBoxSize.add(lblHeight = new JLabel(Labels[3]));
+         panelBoxSize.add(txtHeight = new JTextField());         
+         panelBoxSize.add(lblLength = new JLabel(Labels[4]));
+         panelBoxSize.add(txtLength = new JTextField());
+         /* ----------------------------------------------------- */
+
+ 
+         /* Panel Grade Of Card */
+         JPanel panelGradeOfCard = new JPanel();
+         gradeOfCardLayout.setHgap(3);
+         gradeOfCardLayout.setVgap(10);
+         panelGradeOfCard.setLayout(gradeOfCardLayout);
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Box Card",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         panelGradeOfCard.setBorder(title);
+         panelGradeOfCard.add(lblGradeOfCard = new JLabel(Labels[5]));
+         panelGradeOfCard.add(chooseGrade);
+         /* ----------------------------------------------------- */
+
+         
+         
+         /* Panel Choose Printing */
+         JPanel panelChoosePrinting = new JPanel();
+         PrintingLayout.setVgap(3);
+         PrintingLayout.setHgap(10);
+         panelChoosePrinting.setLayout(PrintingLayout);
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Printing",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         panelChoosePrinting.setBorder(title);
+         panelChoosePrinting.add(radioYesP);
+         panelChoosePrinting.add(radioNoP);
+         panelChoosePrinting.add(lblGradeOfCard = new JLabel(Labels[9]));
+         panelChoosePrinting.add(choosePrinting);
          /* ----------------------------------------------------- */
          
+         
+
+         /* Panel Reinforcing  */
+         JPanel panelReinforcing = new JPanel(); //create panel
+         ReinforcingLayout.setHgap(3);
+         ReinforcingLayout.setVgap(10);
+         panelReinforcing.setLayout(ReinforcingLayout); 
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Reinforcing",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         
+         panelReinforcing.setBorder(title);
+         panelReinforcing.add(radioYesR);
+         panelReinforcing.add(radioNoR);
+         panelReinforcing.add(lblReinforcing = new JLabel(Labels[10]));
+         panelReinforcing.add(LstReinforcing);
+         /* ----------------------------------------------------- */
+
+         
+         /* Panel Choose Sealable */
+         JPanel panelSealable = new JPanel();
+         SealableLayout.setVgap(3);
+         SealableLayout.setHgap(10);
+         panelSealable.setLayout(SealableLayout);
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Sealable",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         panelSealable.setBorder(title);
+         panelSealable.add(radioYesS);
+         panelSealable.add(radioNoS);
+         /* ----------------------------------------------------- */
+
+ 
          /* Panel Actions 1 */
          JPanel panelActions1 = new JPanel();
          Actions1Layout.setHgap(3);
@@ -316,7 +626,24 @@ public class GUI extends JFrame {
          panelActions1.add(OrderButton);
          /* ----------------------------------------------------- */
          
-         /* Panel Actions */
+         
+         /* Panel Status */
+         JPanel panelStatus = new JPanel();
+         StatusLayout.setVgap(3);
+         StatusLayout.setHgap(10);
+         panelStatus.setLayout(StatusLayout);
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Status",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         panelStatus.setBorder(title);
+         JScrollPane scrollPane2 = new JScrollPane(panelStatus);
+         panelStatus.add(textAreaStatus);
+         /* ----------------------------------------------------- */
+         
+         
+         /* Panel Actions 2 */
          JPanel panelActions2 = new JPanel();
          Actions2Layout.setHgap(3);
          Actions2Layout.setVgap(10);
@@ -331,7 +658,7 @@ public class GUI extends JFrame {
                                   greenLine, compound);
          
          panelActions2.setBorder(compound);
-         panelActions2.add(loadTeams);
+         panelActions2.add(ConfirmOrderButton);
          panelActions2.add(exitButton);
          /* ----------------------------------------------------- */
          
@@ -348,15 +675,28 @@ public class GUI extends JFrame {
         //
         // Place the Components into the Pane - Create the User Interface
         //
-        
-        cp.add(panelHeader);
+        //cp.add(panelHeader);
+        //cp.add(new JSeparator());
+        cp.add(panelQuantity);
+        cp.add(new JSeparator());
+        cp.add(panelBoxSize);
+        cp.add(new JSeparator());
+        cp.add(panelGradeOfCard);
+        cp.add(new JSeparator());
+        cp.add(panelChoosePrinting);
+        cp.add(new JSeparator());
+        cp.add(panelReinforcing);
+        cp.add(new JSeparator());
+        cp.add(panelSealable);
         cp.add(new JSeparator());
         cp.add(panelActions1);
         cp.add(new JSeparator());
-        cp.add(panelResults);
+        cp.add(panelStatus);
         cp.add(new JSeparator());
         cp.add(panelActions2);
         cp.add(new JSeparator());
+        
+        
 
         /* Set the Size of the window and then Display it */
         
@@ -365,7 +705,7 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
-    /** 
+    /* 
      * this Method Calculates all the values entered by the user 
      * calculates the correctnes of the order. Is used in the 
      * Calculate button and the next order button
@@ -387,12 +727,18 @@ public class GUI extends JFrame {
             if (firstOrder){
                 
                 /* create the Order */
-                //order = new Order();               
+                order = new Order();               
             }
             
             
             /* create the box */
-            
+            box = new FlexBox(width,height,length,grade,colourPrint,
+                    typeOfPrint,
+                    reinforcedBottom,
+                    sealableTops,
+                    reinforcedCorners);
+            /* get its type */
+            boxType = box.returnBoxType();
             
             /* check the returned type */
             if (boxType.equals("0")){ // NOT A VALID BOX
@@ -404,14 +750,14 @@ public class GUI extends JFrame {
             } else{  // Box type is valid ( 1 to 6 )
                 
                 /* get the cost of the Box */
-               // boxCost = box.resolveCost();
+                boxCost = box.resolveCost();
                 
                 /* show the status to the user */
                 //showStatus(boxType,boxCost,orderCost,OrderID);
                 
                 
                 /* enable the place order button */
-                loadTeams.setEnabled(true);
+                ConfirmOrderButton.setEnabled(true);
                 
             }
             
@@ -451,7 +797,7 @@ public class GUI extends JFrame {
              * The validation of empty fields that are required and non nueric input 
              * is done using NumberFormatException.  
              */
-            //checkW_H_L(width,height,length);
+            checkW_H_L(width,height,length);
             
             grade = Integer.parseInt((String) chooseGrade.getSelectedItem());
             
@@ -595,14 +941,13 @@ public class GUI extends JFrame {
             }  
 
         } 
-        /*
         catch ( InvalidInputException iie ){ // handle invalid Width height length values
             
             msg.showMessageDialog(null, "Invalid Input! " + newLine +
                         "Width Height and Length can be between Min 20 cm " +
                         "and Maximum 2 meters.",
                         "ERROR", msg.ERROR_MESSAGE);
-        }*/
+        }
         catch (Exception e ){  // handling any other type of mistake that might occur
                         
             msg.showMessageDialog(null, "Unexpected Error: " + e.toString(),
@@ -615,39 +960,51 @@ public class GUI extends JFrame {
     }
     
     /**
-     * Prints information about matches
-     * 
-     * @param ArrayList<String> a list containing all math information
+     * This method simply prints to the text area 
+     * the complete order information to the user
      */
-    @SuppressWarnings("static-access")
-	private void showResults(ArrayList<String> matchList){
-    	
-    	
-    	 try{
+    private void showStatus(String boxType,double boxCost,double orderCost,String orderID){
         
       
-    		 textAreaResults.append(" Match List and Results - Numer of Matches - " + matchList.size() + newLine);
-    		 textAreaResults.append("-----------------------------------------------------------------------" + newLine);
-    		 textAreaResults.append(newLine);
-    		 textAreaResults.append("Number Of Boxes ordered: " + boxQuantity + newLine);
-    		 textAreaResults.append("Width: "+ width +" Height: " + height + " Length: " + length + newLine);
-    		 textAreaResults.append("Grade Of Card: Type" + grade + newLine);
-          
-    		 textAreaResults.append("--------------------------");
-    		 textAreaResults.append(newLine);
+        textAreaStatus.append("Order Details for Order Number - " + orderID +" - are: " + newLine);
+        textAreaStatus.append("-----------------------------------------------------" + newLine);
+        textAreaStatus.append(newLine);
+        textAreaStatus.append("Number Of Boxes ordered: " + boxQuantity + newLine);
+        textAreaStatus.append("Width: "+ width +" Height: " + height + " Length: " + length + newLine);
+        textAreaStatus.append("Grade Of Card: Type" + grade + newLine);
         
-    	 }
-    	 catch(Exception e){
-             msg.showMessageDialog(null,"There was an internal error",
-                                   "JavaBall-Error!",msg.ERROR_MESSAGE);
-         }
+        if ( colourPrint ){
+            textAreaStatus.append("Printing: Yes" + newLine);
+            textAreaStatus.append("Type Of Printing: " + typeOfPrint + newLine);
+        }
+        else
+            textAreaStatus.append("Printing: None" + newLine);
+            
+        if (reinforcment)
+            textAreaStatus.append("Reinforcing: Yes" + newLine);
+        else
+            textAreaStatus.append("Reinforcing: None "+ newLine);
+        
+        if (sealableTops)
+            textAreaStatus.append("Sealable Tops: Yes"+ newLine);
+        else
+            textAreaStatus.append("Sealable Tops: No" + newLine);
+        
+        textAreaStatus.append("Type of Box: " + boxType + newLine);
+        textAreaStatus.append("Price Of Box: " + boxCost + newLine) ;
+        textAreaStatus.append("Total Cost: " + orderCost + newLine) ;
+        
+        textAreaStatus.append("--------------------------");
+        textAreaStatus.append(newLine);
+        
+        
         
         
         
         
     }
     
-    /**
+    /* 
      * This method check's if width - height - and length are valid (between 10 cm and 1 meters)
      * and if they are not throws a custom exception ( InvalidInputException )
      *
@@ -655,8 +1012,7 @@ public class GUI extends JFrame {
      * is done using NumberFormatException.  
      */
     private void checkW_H_L(double width,double height,double length)
-                                               //  throws InvalidInputException
-    { 
+                                                 throws InvalidInputException { 
     
         
         // check the correct boundaries of the user input
@@ -665,12 +1021,12 @@ public class GUI extends JFrame {
                                    ( length < 10 || length > 200 ) ) ? true : false;
         
         // if they are invalid throw a custom exception
-      //  if ( invalidW_H_L )
-          //  throw new InvalidInputException();
+        if ( invalidW_H_L )
+            throw new InvalidInputException();
     
     }
     
-    /** 
+    /* 
      * This method will create the OrderDetail class ( containing all the quotes 
      * for boxes of different type - if more than one type for a single order)
      * and place them all inside
@@ -686,21 +1042,21 @@ public class GUI extends JFrame {
                 
                 if (firstOrder){
                     /* create an orderID */
-                   // orderID = order.orderID();
+                    orderID = order.orderID();
                     firstOrder = false;
                 }
             
                 /* create an OrderDetail object to hold the first group of boxes ordered */
-              //  orderDetail = new OrderItem(box,status,boxQuantity);
+                orderDetail = new OrderItem(box,status,boxQuantity);
         
                 /* add the order detail to the order */
-              //  order.addOrderItem(orderDetail);
+                order.addOrderItem(orderDetail);
                 
                 /* calculate the new cost */
-               // orderCost = order.getTotalOrderCost();
+                orderCost = order.getTotalOrderCost();
                 
                 /* show the status to the user */
-                //showResults(boxType,boxCost,orderCost,orderID);
+                showStatus(boxType,boxCost,orderCost,orderID);
                               
             }
             

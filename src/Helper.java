@@ -25,7 +25,7 @@ public class Helper {
 	 * @throws FileNotFoundException 
 	 * 
 	 **/
-	public String[] readInputFile(String inputFile) throws FileNotFoundException{ 
+	private String[] readInputFile(String inputFile) throws FileNotFoundException{ 
 				
 		String everything = null; //will hold the file contents
 		String[] names = null; //will hold each team name
@@ -68,7 +68,7 @@ public class Helper {
 	 * @return ArrayList<Team>
 	 * 
 	 * */
-	public ArrayList<Team> createTeams(){
+	private ArrayList<Team> createTeams(){
 		
 		String[] names = null; //holds all the team names
 		//Map<String, Team> teams = new HashMap<>();
@@ -88,7 +88,6 @@ public class Helper {
 		int i = 0;
 		// create team objects dynamically depending on the size of the array holding the names
 		for (String name: names){
-			//teams.put("team" + i, new Team(names[i]));
 			allTeams.add(new Team(names[i]));
 			i++;			
 		}
@@ -102,10 +101,14 @@ public class Helper {
 	 * 
 	 * @return ArrayList<String> a list of all possible matches 
 	 **/
-	public ArrayList<String> createMatchList(ArrayList<Team> teams){
+	public ArrayList<String> createMatchList(){
 		
+		ArrayList<Team> teams = new ArrayList<Team>(); // will hold all the team objects
 		ArrayList<String> teamNames = new ArrayList<String>(); //will hold all team names
 		ArrayList<String> allMatches = new ArrayList<String>(); //will hold all matches
+		
+		//create teams
+		teams = createTeams();
 		
 		//create a list containing all the team names	
 		for (Team team: teams){	
@@ -135,8 +138,6 @@ public class Helper {
 		return allMatches;		
 	}
 	
-	
-
 }
 		
 
