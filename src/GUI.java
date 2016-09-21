@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.io.Console;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import javax.swing.*;
@@ -34,7 +35,7 @@ public class GUI extends JFrame {
     GridLayout boxSizeLayout = new GridLayout(3,2);
     //GridLayout gradeOfCardLayout = new GridLayout(1,2);
     //GridLayout PrintingLayout = new GridLayout(2,2);
-    //GridLayout ReinforcingLayout = new GridLayout(2,2);
+    GridLayout deleteTeamLayout = new GridLayout(2,2);
     //GridLayout SealableLayout = new GridLayout(1,2);
     GridLayout Actions1Layout = new GridLayout(1,2);
     GridLayout resultLayout = new GridLayout(1,1);
@@ -44,7 +45,7 @@ public class GUI extends JFrame {
     
     /* LABELS *****/
     private JLabel lblCustName,lbHeader,lblBoxSize,lblGradeOfCard,
-                               lblPrinting,lblTypeOfPrint,lblReinforcing,
+                               lblPrinting,lblTypeOfPrint,lblDeleteTeam,
                                lblSealable,lblStatus,lblWidth,lblHeight,
                                lblLength,lblTypeOfPrinting,lblPlaceHolder,
                                lblChooseQuantity;
@@ -70,8 +71,8 @@ public class GUI extends JFrame {
     /* RADIO BUTTON GROUPS *****/
     private ButtonGroup groupForPrinting,groupForSealable,groupForReinforcing;
     
-    /* LISTS ****/
-    private JList LstReinforcing;
+    /* J LISTS ****/
+    private JList teamsToDelete;
     
     /* TEXT AREA ****/
     private TextArea textAreaResults;
@@ -107,6 +108,7 @@ public class GUI extends JFrame {
     private double boxCost,orderCost;
     private LinkedList<Team> teams = new LinkedList<Team>(); // will hold all the team objects
     private ArrayList<String> matchList = new ArrayList<String>(); //will hold all matches
+    private String[] allTeamNames; //will hold all team names
     
     
     
@@ -130,17 +132,17 @@ public class GUI extends JFrame {
     @SuppressWarnings("static-access")
 	protected void init(){
     	
+    	Helper hlp = new Helper();  
     	
-    	/* create the teams and the match list */
-    	Helper hlp = new Helper(); 
-    	
-    	/* create the GUI */
-    	createGui();
-    	/* show initial results */
+    	/* load and prepare all necessary data */
     	try{
     		
-    		teams = hlp.createTeams(); //create teams
+    		teams = hlp.createTeams(); //create team list 
+    		allTeamNames = hlp.readInputFile("TeamsIn.txt"); // create allTeamNames list
     		matchList = hlp.createMatchList(teams); //create match list 
+    		
+    		/* create the GUI */
+    		createGui();
     		showResults(matchList);
     	}
     	catch (FileNotFoundException e) { // the TeamsIn file cannot be found
@@ -189,15 +191,16 @@ public class GUI extends JFrame {
     /**
      * Creates the GUI  
      */
-    @SuppressWarnings("static-access")
+    @SuppressWarnings({ "static-access", "unchecked", "rawtypes" })
      protected void createGui(){
         
     	
          
-         String[] Labels = {" Results Processing of JavaBall Matches","Box Size","Width","Height","Length","Grade Of Card",
-                               "Printing","Yes","No","Type Of Printing","Choose Reinforcing",
-                               "Sealable","Status","Customer Name"," ","Choose Box Quantity"};
-         String[] Printing = {null,"1","2","3"};
+         String[] labels = {" Results Processing of JavaBall Matches","Box Size","Width","Height","Length","Grade Of Card",
+                               "Sealable","Status","Customer Name"," ","Choose a team to Delete"};
+         String[] printing = {null,"1","2","3"};
+         String[] reinforcing = allTeamNames; //{"alpha","beta"};
+         
          
         
         //
@@ -234,7 +237,7 @@ public class GUI extends JFrame {
         
         
         /* Delete teams Button */
-        delete = new JButton("Order");
+        delete = new JButton("Delete Team");
         delete.setEnabled(false);
         //Add the action Listener - and the code that will hamdle the events
         delete.addActionListener(new ActionListener(){
@@ -272,6 +275,25 @@ public class GUI extends JFrame {
             } 
             
         } );
+        
+        //
+        // Create GUI Componentns - Lists
+        //
+        
+        /* List for choosing which team to delete */
+        teamsToDelete = new JList(allTeamNames); //create the list
+        teamsToDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        teamsToDelete.setVisible(true);
+        /* and the Selection Listener */
+        teamsToDelete.addListSelectionListener(new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+            
+            selection = teamsToDelete.getSelectedIndex();
+            System.out.println("Selection from List's event-> "+selection);
+
+                
+         }
+        } );
                  
         //
         // Create GUI Componentns - Text Area
@@ -300,7 +322,7 @@ public class GUI extends JFrame {
          headerLayout.setVgap(10);
          panelHeader.setLayout(headerLayout);
          
-         lbHeader = new JLabel(Labels[0]);
+         lbHeader = new JLabel(labels[0]);
          lbHeader.setFont(headerFont1);
          panelHeader.add(lbHeader);
          /* ----------------------------------------------------- */
@@ -318,6 +340,24 @@ public class GUI extends JFrame {
          panelResults.setBorder(title);
          JScrollPane scrollPane2 = new JScrollPane(panelResults);
          panelResults.add(textAreaResults);
+         /* ----------------------------------------------------- */
+         
+         /* Panel Delete Team  */
+         JPanel panelDeleteTeam = new JPanel(); //create panel
+         deleteTeamLayout.setHgap(3);
+         deleteTeamLayout.setVgap(10);
+         panelDeleteTeam.setLayout(deleteTeamLayout); 
+         //set the Border and Title 
+         title =  BorderFactory.createTitledBorder(blackline,
+                                              "Delete Team",TitledBorder.LEFT,
+                                               TitledBorder.TOP,headerFont2
+                                                                ,titleFColor);
+         
+         panelDeleteTeam.setBorder(title);
+         //panelDeleteTeam.add(radioYesR);
+         //panelDeleteTeam.add(radioNoR);
+         panelDeleteTeam.add(lblDeleteTeam = new JLabel(labels[10]));
+         panelDeleteTeam.add(teamsToDelete);
          /* ----------------------------------------------------- */
          
          /* Panel Actions 1 */
@@ -373,6 +413,8 @@ public class GUI extends JFrame {
         //
         
         cp.add(panelHeader);
+        cp.add(new JSeparator());
+        cp.add(panelDeleteTeam);
         cp.add(new JSeparator());
         cp.add(panelActions1);
         cp.add(new JSeparator());
@@ -517,7 +559,7 @@ public class GUI extends JFrame {
             if (radioYesR.isSelected()){   // if the user chose to have reinforcing
                      
                 // get his selection from the list
-                selection = LstReinforcing.getSelectedIndex();
+                selection = teamsToDelete.getSelectedIndex();
                 
                 if (selection == -1) {  // if the index is -1 then there was no selection yet
                     
@@ -531,7 +573,7 @@ public class GUI extends JFrame {
                     flag = 0;
 
                     // If the user chose more than one type of reinforcing
-                    if (LstReinforcing.getSelectedIndices().length > 1){
+                    if (teamsToDelete.getSelectedIndices().length > 1){
                                                
                         /* In our case, because we have only 2 choices it is 
                          * safe to asume that he chose both.

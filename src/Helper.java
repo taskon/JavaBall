@@ -29,7 +29,7 @@ public class Helper {
 	
 	private String teamsIn="TeamsIn.txt";
 	
-	private String[] readInputFile(String inputFile) throws FileNotFoundException{ 
+	public String[] readInputFile(String inputFile) throws FileNotFoundException{ 
 				
 		String everything = null; //will hold the file contents
 		String[] names = null; //will hold each team name
@@ -91,7 +91,7 @@ public class Helper {
 		return teams;
 						
 	}
-
+	
 	/**
 	 * Creates and returns an Alphabetically sorted ArrayList holding all matches
 	 * 
@@ -101,25 +101,25 @@ public class Helper {
 	 **/
 	public ArrayList<String> createMatchList(LinkedList<Team> teams) throws FileNotFoundException{
 		
-		ArrayList<String> teamNames = new ArrayList<String>(); //will hold all team names
+		ArrayList<String> allTeamNames = new ArrayList<String>(); //will hold all team names
 		ArrayList<String> allMatches = new ArrayList<String>(); //will hold all matches
 		
 		//create a list containing all the team names	
 		for (Team team: teams){	
-			teamNames.add(team.getName());
+			allTeamNames.add(team.getName());
 		}
 		
 		//sort it alphabetically
-		Collections.sort(teamNames);
+		Collections.sort(allTeamNames);
 		
 		//build a match list and print it
-		for (int i = 0; i < teamNames.size(); i++) {
+		for (int i = 0; i < allTeamNames.size(); i++) {
 			
-			for (int j = i+1; j < teamNames.size(); j++) {
+			for (int j = i+1; j < allTeamNames.size(); j++) {
 								
 				//create the match list
-				allMatches.add(teamNames.get(i));
-				allMatches.add(teamNames.get(j));
+				allMatches.add(allTeamNames.get(i));
+				allMatches.add(allTeamNames.get(j));
 				
 				//print the match list
 				/*
