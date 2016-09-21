@@ -108,7 +108,7 @@ public class GUI extends JFrame {
     private double boxCost,orderCost;
     private LinkedList<Team> teams = new LinkedList<Team>(); // will hold all the team objects
     private ArrayList<String> matchList = new ArrayList<String>(); //will hold all matches
-    private String[] allTeamNames; //will hold all team names
+    private ArrayList<String> allTeamNames; //will hold all team names
     
     
     
@@ -138,7 +138,7 @@ public class GUI extends JFrame {
     	try{
     		
     		teams = hlp.createTeams(); //create team list 
-    		allTeamNames = hlp.readInputFile("TeamsIn.txt"); // create allTeamNames list
+    		allTeamNames = hlp.createTeamNamesList(teams); // create allTeamNames list
     		matchList = hlp.createMatchList(teams); //create match list 
     		
     		/* create the GUI */
@@ -199,9 +199,6 @@ public class GUI extends JFrame {
          String[] labels = {" Results Processing of JavaBall Matches","Box Size","Width","Height","Length","Grade Of Card",
                                "Sealable","Status","Customer Name"," ","Choose a team to Delete"};
          String[] printing = {null,"1","2","3"};
-         String[] reinforcing = allTeamNames; //{"alpha","beta"};
-         
-         
         
         //
         // Create GUI Components - Buttons
@@ -281,7 +278,7 @@ public class GUI extends JFrame {
         //
         
         /* List for choosing which team to delete */
-        teamsToDelete = new JList(allTeamNames); //create the list
+        teamsToDelete = new JList(allTeamNames.toArray()); //create a Jlist populated by the contents of the list holding all team names
         teamsToDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         teamsToDelete.setVisible(true);
         /* and the Selection Listener */
