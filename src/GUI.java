@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.io.Console;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -104,6 +105,8 @@ public class GUI extends JFrame {
     private Dimension screenSize,frameSize;
     private boolean dataStatus,firstOrder = true;
     private double boxCost,orderCost;
+    private LinkedList<Team> teams = new LinkedList<Team>(); // will hold all the team objects
+    private ArrayList<String> matchList = new ArrayList<String>(); //will hold all matches
     
     
     
@@ -115,8 +118,42 @@ public class GUI extends JFrame {
        
     }
     
+    
+    
     /**
-     * gets the dimensions of the user's screen and then
+     * Initalise:
+     *  - Create Gui
+     *  - Load Files 
+     *  - Show Match List 
+     *  
+     */
+    @SuppressWarnings("static-access")
+	protected void init(){
+    	
+    	
+    	/* create the teams and the match list */
+    	Helper hlp = new Helper(); 
+    	
+    	/* create the GUI */
+    	createGui();
+    	/* show initial results */
+    	try{
+    		
+    		teams = hlp.createTeams(); //create teams
+    		matchList = hlp.createMatchList(teams); //create match list 
+    		showResults(matchList);
+    	}
+    	catch (FileNotFoundException e) { // the TeamsIn file cannot be found
+    		
+   		 	msg.showMessageDialog(null,"The filename or directory name is incorrect or does not exist, "
+   		 			+ "The program will now exit!");
+   		 	System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)
+   	 }
+    	
+    }
+    
+    /**
+     * Gets the dimensions of the user's screen and then
      * calculates and adjusts the size of the Jframe 
      */
     private void setWindow(){
@@ -147,35 +184,6 @@ public class GUI extends JFrame {
       setLocation(x, y);
       this.setResizable(false);
   
-    }
-    
-    /**
-     * Initalise:
-     *  - Create Gui
-     *  - Load Files 
-     *  - Show Match List 
-     *  
-     */
-    @SuppressWarnings("static-access")
-	protected void init(){
-    	
-    	
-    	/* create the teams and the match list */
-    	Helper hlp = new Helper(); 	
-    	/* create the GUI */
-    	createGui();
-    	/* show initial results */
-    	try{
-    		
-    		showResults(hlp.createMatchList());
-    	}
-    	catch (FileNotFoundException e) { // the TeamsIn file cannot be found
-    		
-   		 	msg.showMessageDialog(null,"The filename or directory name is incorrect or does not exist, "
-   		 			+ "The program will now exit!");
-   		 	System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)
-   	 }
-    	
     }
     
     /**
