@@ -102,7 +102,8 @@ public class GUI extends JFrame {
     
     /* MISC FIELDS */
     private String status = " ",type,reinfChoise[],orderID;
-    private int selection,confirmation;
+    private String selection; // will hold the team chosen for deletion
+    private int confirmation;
     private Dimension screenSize,frameSize;
     private boolean dataStatus,firstOrder = true;
     private double boxCost,orderCost;
@@ -240,8 +241,8 @@ public class GUI extends JFrame {
         delete.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                                 
-                    /* delete teams the order */
-                    deleteTeams();
+                    /* delete teams */
+                    deleteTeam();
                                      
             } 
         } );
@@ -285,8 +286,12 @@ public class GUI extends JFrame {
         teamsToDelete.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
             
-            selection = teamsToDelete.getSelectedIndex();
+        	// track selections
+            selection = (String) teamsToDelete.getSelectedValue();
             System.out.println("Selection from List's event-> "+selection);
+            // enable delete button as somethong was chosen
+            delete.setEnabled(true);
+            
 
                 
          }
@@ -496,179 +501,26 @@ public class GUI extends JFrame {
     @SuppressWarnings("static-access")
 	private boolean getData(){
 
-         /* =========== Collect Data ============= */
+         /* ======================= Collect Data =============================== */
 
         try {
 
-            /* collect all data to model the box */
-
-            // ************ Width - Height - Length - Grade **************
-            
-            width = Double.parseDouble(txtWidth.getText());
-            height = Double.parseDouble(txtHeight.getText());
-            length = Double.parseDouble(txtLength.getText());
-            
-            /* Check if width - height - and length are valid (between 10 cm and 1 meters)
-             * and if they are not throw a custom exception
-             *
-             * The validation of empty fields that are required and non nueric input 
-             * is done using NumberFormatException.  
-             */
-            //checkW_H_L(width,height,length);
-            
-            grade = Integer.parseInt((String) chooseGrade.getSelectedItem());
-            
-
-            /*  -*************** Printing ***********************************
-             * if there was a choice for Printing get the type of
-             * printing the user requiers */
-            if (radioYesP.isSelected()) {
-
-                colourPrint = true;
-                typeOfPrint = Integer.parseInt((String) choosePrinting.getSelectedItem());
-            }
-
-            /* ************************** Box Quantity ************************
-             * If there was no box quantity set,a message is
-             * dispayed and the value is set to 1 */
-            if (boxQuantity == 0) {
-
-                msg.showMessageDialog(null, "The Quantity was not set. " +
-                        "Default Order size set to 1 Box!",
-                        "Warning", msg.WARNING_MESSAGE);
-                boxQuantity = 1;
-                txtQuantity.setText("1");
-
-            }
-
-            //  ************************* Sealable ****************************
-            if (radioYesS.isSelected()) {
-                sealableTops = true;
-            } else {
-                sealableTops = false;
-            }
+           
 
             
-            // ************************* Reinforcing **************************
+            // ******************* Chosen a Team to Delete ********************
             
-            int flag =0;
-            // get the selection of the user if he requires reinforcing or not
-            if (radioYesR.isSelected()){   // if the user chose to have reinforcing
-                     
-                // get his selection from the list
-                selection = teamsToDelete.getSelectedIndex();
-                
-                if (selection == -1) {  // if the index is -1 then there was no selection yet
-                    
-                    //No selection yet
-                    flag = 1;
-                }
-                else { // There was a selection
-                    
-                    
-                    reinforcment = true;
-                    flag = 0;
-
-                    // If the user chose more than one type of reinforcing
-                    if (teamsToDelete.getSelectedIndices().length > 1){
-                                               
-                        /* In our case, because we have only 2 choices it is 
-                         * safe to asume that he chose both.
-                         * but in other cases we should use the code below to
-                         * check all of the users selections -if more than one-
-                         */  
-                        reinforcedBottom = true;
-                        reinforcedCorners = true;
+            //int flag =0;
+            // get the users selection which team to delete
+            selection = (String)teamsToDelete.getSelectedValue();
+      
+            dataStatus = (selection != null) ? true : false; //check if OK
+            
+            
+        }
+        catch (Exception e ){ 
                         
-                        // get the users choices and store them in an array
-                        /*Object temp[] = LstReinforcing.getSelectedValues();
-                        for (int i=0;i<LstReinforcing.getSelectedIndices().length;i++)
-                            reinfChoise[i] = (String)temp[i];*/
-                                               
-                    }
-                    else{
-                        // If the user chose one of 2 types of reinforcing 
-                        switch (selection) {
-
-                            case 0:{
-                                reinforcedBottom = true;
-                                reinforcedCorners = false;
-                                break;
-                            }
-                            case 1:{
-                                reinforcedCorners = true;
-                                reinforcedBottom = false;
-                                break;
-                            }
-                            default:{
-                                reinforcedCorners = false;
-                                reinforcedBottom = false;
-                            }
-                        } // Switch
-                    }
-                }
-            }
-            
-            /* if the user chose to have Reinforcing but didn't choose what type
-             * pop up a warning
-             */
-            if (flag == 1 && radioYesR.isSelected()) {
-                
-                msg.showMessageDialog(null, "The Reinforcing option was set, " +
-                        "but a type of reinforcing was not chosen!",
-                        "Warning", msg.WARNING_MESSAGE);
-                reinforcment = false;
-            }
-            
-            /* check if all requred data was 
-             * completed for the order to take place
-             */
-            Boolean dimensionsOK  = ( width != 0  && height != 0 && length != 0 ) ? true : false;
-            Boolean quantityOK = ( boxQuantity != 0 ) ? true : false;
-            Boolean gradeOK = ( grade != 0 ) ? true : false;
-            
-            dataStatus = (dimensionsOK && quantityOK && gradeOK) ? true : false;
-            
-        } // Try
-        catch (NumberFormatException nfe) {  // handling input errors (null , numeric format)
-
-            status = nfe.toString();
-            System.err.println(nfe);
-            
-            Boolean noInputW_H_L = ( status.equals("java.lang.NumberFormatException: empty String")) ? true : false;
-            Boolean noInputGrade = (status.equals("java.lang.NumberFormatException: null")) ? true : false;
-            Boolean nonNumericInput = (!(status.equals("java.lang.NumberFormatException: empty String"))) ? true : false;
-
-            if ( noInputW_H_L ){
-                msg.showMessageDialog(null, "Fields Width - Height - Length " +
-                        "must be filed !",
-                        "Warning", msg.WARNING_MESSAGE);
-
-            } else if ( noInputGrade ) {
-                msg.showMessageDialog(null, "A Type Of Grade " +
-                        "must be chosen.",
-                        "Warning", msg.WARNING_MESSAGE);
-                
-            }else if ( nonNumericInput ) {
-                msg.showMessageDialog(null, "There was an Error " +
-                        status.substring(32, status.length()) + newLine +
-                        "Please Enter Only Numeric " +
-                        "data in Fields Width - Height - Length!",
-                        "ERROR", msg.ERROR_MESSAGE);
-            }  
-
-        } 
-        /*
-        catch ( InvalidInputException iie ){ // handle invalid Width height length values
-            
-            msg.showMessageDialog(null, "Invalid Input! " + newLine +
-                        "Width Height and Length can be between Min 20 cm " +
-                        "and Maximum 2 meters.",
-                        "ERROR", msg.ERROR_MESSAGE);
-        }*/
-        catch (Exception e ){  // handling any other type of mistake that might occur
-                        
-            msg.showMessageDialog(null, "Unexpected Error: " + e.toString(),
+            	msg.showMessageDialog(null, "Unexpected Error: " + e.toString(),
                         "ERROR", msg.ERROR_MESSAGE);
             
         }
@@ -737,48 +589,21 @@ public class GUI extends JFrame {
     /** 
      * This method will delete the teams chosen by the user
      */
-    private void deleteTeams(){
-        
-        
-            
-            /* if everything is OK */
-            if ( calculate() ){
-                
-                
-                if (firstOrder){
-                    /* create an orderID */
-                   // orderID = order.orderID();
-                    firstOrder = false;
-                }
-            
-                /* create an OrderDetail object to hold the first group of boxes ordered */
-              //  orderDetail = new OrderItem(box,status,boxQuantity);
-        
-                /* add the order detail to the order */
-              //  order.addOrderItem(orderDetail);
-                
-                /* calculate the new cost */
-               // orderCost = order.getTotalOrderCost();
-                
-                /* show the status to the user */
-                //showResults(boxType,boxCost,orderCost,orderID);
-                              
-            }
+    private void deleteTeam(){
+    	
+    	//are you sure???
+           
+        if ( getData() ){ // if all data are collected and valid 
+        	
+        	//delete 
+        	
+        	System.out.println("deleted");
+        }
             
               
             
-        }
+    }
         
-        
-        
-        
-        
-        
-                
-   
-    
-    
-
-            
-}
+             
+} // end class
 
