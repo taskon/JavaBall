@@ -797,7 +797,7 @@ public class guiBK extends JFrame {
              * The validation of empty fields that are required and non nueric input 
              * is done using NumberFormatException.  
              */
-            checkW_H_L(width,height,length);
+            //checkW_H_L(width,height,length);
             
             grade = Integer.parseInt((String) chooseGrade.getSelectedItem());
             

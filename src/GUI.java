@@ -102,10 +102,10 @@ public class GUI extends JFrame {
     
     /* MISC FIELDS */
     private String status = " ",type,reinfChoise[],orderID;
-    private String selection; // will hold the team chosen for deletion
+    private String selectedTeamForDeletion; // will hold the team chosen for deletion
     private int confirmation;
     private Dimension screenSize,frameSize;
-    private boolean dataStatus,firstOrder = true;
+    private boolean dataStatus,teamDeleted = true;
     private double boxCost,orderCost;
     private LinkedList<Team> teams = new LinkedList<Team>(); // will hold all the team objects
     private ArrayList<String> matchList = new ArrayList<String>(); //will hold all matches
@@ -266,7 +266,7 @@ public class GUI extends JFrame {
                         /* if the user chosses to proceed with the order */
                         if (confirmation == 0){
                             
-                            firstOrder = true;
+                            teamDeleted = true;
                                                  
                         }       
                 }                     
@@ -287,8 +287,8 @@ public class GUI extends JFrame {
         public void valueChanged(ListSelectionEvent e) {
             
         	// track selections
-            selection = (String) teamsToDelete.getSelectedValue();
-            System.out.println("Selection from List's event-> "+selection);
+            selectedTeamForDeletion = (String) teamsToDelete.getSelectedValue();
+            System.out.println("Selection from List's event-> "+selectedTeamForDeletion);
             // enable delete button as somethong was chosen
             delete.setEnabled(true);
             
@@ -451,7 +451,7 @@ public class GUI extends JFrame {
          */
         if (ok){
             
-            if (firstOrder){
+            if (teamDeleted){
                 
                 /* create the Order */
                 //order = new Order();               
@@ -512,9 +512,9 @@ public class GUI extends JFrame {
             
             //int flag =0;
             // get the users selection which team to delete
-            selection = (String)teamsToDelete.getSelectedValue();
+            selectedTeamForDeletion = (String)teamsToDelete.getSelectedValue();
       
-            dataStatus = (selection != null) ? true : false; //check if OK
+            dataStatus = (selectedTeamForDeletion != null) ? true : false; //check if OK
             
             
         }
@@ -590,18 +590,28 @@ public class GUI extends JFrame {
      * This method will delete the teams chosen by the user
      */
     private void deleteTeam(){
-    	
-    	//are you sure???
-           
+    	         
         if ( getData() ){ // if all data are collected and valid 
         	
-        	//delete 
-        	
-        	System.out.println("deleted");
+        	/* get final confirmation */
+            confirmation = JOptionPane.showConfirmDialog(null,
+                        "Are you sure you want to delete: "
+                         + selectedTeamForDeletion,
+                         "Final Confirmation",
+                         JOptionPane.YES_NO_OPTION);
+            
+            /* if the user chosses to proceed with the order */
+            if (confirmation == 0){
+                
+               
+                // TODO: DELETE
+            	System.out.println(selectedTeamForDeletion + " " + " was deleted " );
+            	 teamDeleted = true;
+            } 
         }
-            
-              
-            
+        else{	
+        	msg.showMessageDialog(null,"Please Choose a team to Delete....");
+        }             
     }
         
              
