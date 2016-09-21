@@ -603,11 +603,9 @@ public class GUI extends JFrame {
             
             /* if the user chooses to proceed delete */
             if (confirmation == 0){
-                           
-            	// TODO: DELETE
+                         
             	if (hlp.searchDelete(teams, selectedTeamForDeletion)){ // success
             		msg.showMessageDialog(null, selectedTeamForDeletion + " was deleted.");
-            		System.out.println("suscess");
             		delete.setEnabled(false);
             		// TODO: Update everything
             	}

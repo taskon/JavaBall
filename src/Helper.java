@@ -168,21 +168,34 @@ public class Helper {
 	public boolean searchDelete(LinkedList<Team> teams, String searchTerm){
 		
 		Iterator<Team> it = teams.iterator();
-		
+		for (Team team : teams)
+			System.out.println(team.getName());
 		
 		if (teams != null){
 			
 			while(it.hasNext()){
 				
-			    if(it.next().getName().contains(searchTerm))
+			    if(it.next().getName().contains(searchTerm)){	
 			    	
 			        it.remove();
+			    	for (Team team : teams)
+			    		System.out.println(team.getName());
 			        //break;
 			        return true; //works like break;		        
 			   }			    
-		} 
-		
+			} 
+		}	
 		return false; //not found		
+	}
+	
+	/**
+	 * Updates the matchList after a deletion of a team.
+	 * 
+	 * */
+	public void updateMatchList(){
+		
+		
+		
 	}
 	
 }
