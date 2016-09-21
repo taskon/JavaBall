@@ -22,8 +22,8 @@ public class Main {
 		
 		*/
 		
-		GUI gui = new GUI("Java Ball"); // create a new interface object
-	    gui.init();
+		GUI gui = new GUI("Java Ball"); // create a new interface
+	    gui.init();// initilize it
 	    
 		
 

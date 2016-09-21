@@ -25,12 +25,14 @@ public class Helper {
 	 * @throws FileNotFoundException 
 	 * 
 	 **/
+	
+	private String teamsIn="TeamsIn.txt";
+	
 	private String[] readInputFile(String inputFile) throws FileNotFoundException{ 
 				
 		String everything = null; //will hold the file contents
 		String[] names = null; //will hold each team name
 		BufferedReader br = new BufferedReader(new FileReader(inputFile)); // Exception is handled in the caller method
-		//String singleName = null;
 		
 		
 		try {
@@ -66,24 +68,17 @@ public class Helper {
 	 * is created with a team name read from the input file and represents a single football team.
 	 * 
 	 * @return ArrayList<Team>
+	 * @throws FileNotFoundException
 	 * 
 	 * */
-	private ArrayList<Team> createTeams(){
+	private ArrayList<Team> createTeams() throws FileNotFoundException{
 		
 		String[] names = null; //holds all the team names
 		//Map<String, Team> teams = new HashMap<>();
 		ArrayList<Team> allTeams = new ArrayList<Team>(); //will hold all the team objects created from the names 
 		
-		
-		try {
-			
 		// load team names from file into a string array
-		names = readInputFile("TeamsIn.txt");
-				
-		} catch (FileNotFoundException e) { // the file cannot be found
-			System.out.println("The filename or directory name is incorrect or does not exist, Please try again!");
-			System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)
-		}
+		names = readInputFile(teamsIn); // exception in hanled from the caller method at the GUI level
 		
 		int i = 0;
 		// create team objects dynamically depending on the size of the array holding the names
@@ -100,8 +95,9 @@ public class Helper {
 	 * Creates and returns an Alphabetically sorted ArrayList holding all matches
 	 * 
 	 * @return ArrayList<String> a list of all possible matches 
+	 * @throws FilenotFoundException
 	 **/
-	public ArrayList<String> createMatchList(){
+	public ArrayList<String> createMatchList() throws FileNotFoundException{
 		
 		ArrayList<Team> teams = new ArrayList<Team>(); // will hold all the team objects
 		ArrayList<String> teamNames = new ArrayList<String>(); //will hold all team names

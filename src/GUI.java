@@ -9,6 +9,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -148,9 +149,14 @@ public class GUI extends JFrame {
     }
     
     /**
-     * Initalise  
+     * Initalise:
+     *  - Create Gui
+     *  - Load Files 
+     *  - Show Match List 
+     *  
      */
-    protected void init(){
+    @SuppressWarnings("static-access")
+	protected void init(){
     	
     	
     	/* create the teams and the match list */
@@ -158,8 +164,16 @@ public class GUI extends JFrame {
     	/* create the GUI */
     	createGui();
     	/* show initial results */
-    	showResults(hlp.createMatchList());
-    	
+    	try{
+    		
+    		showResults(hlp.createMatchList());
+    	}
+    	catch (FileNotFoundException e) { // the TeamsIn file cannot be found
+    		
+   		 	msg.showMessageDialog(null,"The filename or directory name is incorrect or does not exist, "
+   		 			+ "The program will now exit!");
+   		 	System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)
+   	 }
     	
     }
     
@@ -253,7 +267,7 @@ public class GUI extends JFrame {
         //
         // Create GUI Componentns - Text Area
         //
-        textAreaResults = new TextArea(5, 100);
+        textAreaResults = new TextArea(5, 30);
         textAreaResults.setBackground(Color.WHITE);
         textAreaResults.setEditable(false);
         
@@ -263,8 +277,8 @@ public class GUI extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
          
         textAreaResults.setFont( new Font("Serif",Font.ITALIC, 16));
-        //textAreaStatus.setLineWrap(true);
-        //textAreaStatus.setWrapStyleWord(true);
+        //textAreaResults.setLineWrap(true);
+        //textAreaResults.setWrapStyleWord(true);
         /* ------------------------------------------------------- */
         
         //
@@ -431,7 +445,8 @@ public class GUI extends JFrame {
      * The method of the GUI class that will collect all data and then
      * validate them and if all is collected and valid returns true.
      */
-    private boolean getData(){
+    @SuppressWarnings("static-access")
+	private boolean getData(){
 
          /* =========== Collect Data ============= */
 
@@ -617,8 +632,7 @@ public class GUI extends JFrame {
     /**
      * Prints information about matches
      * 
-     * @param ArrayList<String> a list containing all math information
-     */
+     * @param ArrayList<String> a list containing all teams     */
     @SuppressWarnings("static-access")
 	private void showResults(ArrayList<String> matchList){
     	
@@ -626,25 +640,29 @@ public class GUI extends JFrame {
     	 try{
         
       
-    		 textAreaResults.append(" Match List and Results - Numer of Matches - " + matchList.size() + newLine);
+    		 textAreaResults.append(" Match List and Results - Number of Matches - " + matchList.size() + newLine);
     		 textAreaResults.append("-----------------------------------------------------------------------" + newLine);
     		 textAreaResults.append(newLine);
-    		 textAreaResults.append("Number Of Boxes ordered: " + boxQuantity + newLine);
-    		 textAreaResults.append("Width: "+ width +" Height: " + height + " Length: " + length + newLine);
-    		 textAreaResults.append("Grade Of Card: Type" + grade + newLine);
-          
-    		 textAreaResults.append("--------------------------");
+    		 textAreaResults.append("");
+    		 /* print the match list */
+    			for (int i = 0; i < matchList.size(); i++) {
+    				
+    				for (int j = i+1; j < matchList.size(); j++) {  					
+    					//print the match list
+    					textAreaResults.append(matchList.get(i) + " V ");
+    					textAreaResults.append(matchList.get(j));
+    					textAreaResults.append("     * * * No Resutls Yet * * * " + newLine);
+    					
+    				}			
+    			}
+    		 textAreaResults.append("-------------------------------------------------------------------------");
     		 textAreaResults.append(newLine);
         
     	 }
     	 catch(Exception e){
              msg.showMessageDialog(null,"There was an internal error",
                                    "JavaBall-Error!",msg.ERROR_MESSAGE);
-         }
-        
-        
-        
-        
+         }        
     }
     
     /**
