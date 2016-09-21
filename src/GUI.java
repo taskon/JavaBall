@@ -9,6 +9,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Console;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -267,7 +268,7 @@ public class GUI extends JFrame {
         //
         // Create GUI Componentns - Text Area
         //
-        textAreaResults = new TextArea(5, 30);
+        textAreaResults = new TextArea(7, 30);
         textAreaResults.setBackground(Color.WHITE);
         textAreaResults.setEditable(false);
         
@@ -632,7 +633,8 @@ public class GUI extends JFrame {
     /**
      * Prints information about matches
      * 
-     * @param ArrayList<String> a list containing all teams     */
+     * @param ArrayList<String> a list containing all teams
+     **/
     @SuppressWarnings("static-access")
 	private void showResults(ArrayList<String> matchList){
     	
@@ -640,21 +642,17 @@ public class GUI extends JFrame {
     	 try{
         
       
-    		 textAreaResults.append(" Match List and Results - Number of Matches - " + matchList.size() + newLine);
+    		 textAreaResults.append(" Match List and Results - Number of Matches: " + matchList.size()/2 + newLine);
     		 textAreaResults.append("-----------------------------------------------------------------------" + newLine);
-    		 textAreaResults.append(newLine);
-    		 textAreaResults.append("");
+    		 //textAreaResults.append(newLine);
     		 /* print the match list */
-    			for (int i = 0; i < matchList.size(); i++) {
-    				
-    				for (int j = i+1; j < matchList.size(); j++) {  					
-    					//print the match list
-    					textAreaResults.append(matchList.get(i) + " V ");
-    					textAreaResults.append(matchList.get(j));
-    					textAreaResults.append("     * * * No Resutls Yet * * * " + newLine);
-    					
-    				}			
-    			}
+    		 for (int i=0; i < matchList.size(); i+=2){
+    			 
+    			 textAreaResults.append(matchList.get(i) + " V ");
+    			 textAreaResults.append(matchList.get(i+1) + " ");
+    			 textAreaResults.append(" * * * No Results Yet * * * " + newLine);
+    			 
+    		 }
     		 textAreaResults.append("-------------------------------------------------------------------------");
     		 textAreaResults.append(newLine);
         
@@ -662,6 +660,7 @@ public class GUI extends JFrame {
     	 catch(Exception e){
              msg.showMessageDialog(null,"There was an internal error",
                                    "JavaBall-Error!",msg.ERROR_MESSAGE);
+             System.out.print(e.getMessage().toString());
          }        
     }
     

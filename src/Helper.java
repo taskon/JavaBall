@@ -124,10 +124,11 @@ public class Helper {
 				allMatches.add(teamNames.get(j));
 				
 				//print the match list
+				/*
 				System.out.print(teamNames.get(i) + " Vs ");
 				System.out.print(teamNames.get(j));
 				System.out.println("     * * * No Resutls Yet * * * ");
-				
+				*/
 			}			
 		}
 		
