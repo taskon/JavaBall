@@ -50,7 +50,7 @@ public class GUI extends JFrame {
                                lblChooseQuantity;
     
     /* BUTTONS *****/
-    private JButton loadTeams,exitButton,calculateButton,OrderButton; 
+    private JButton loadTeams,exitButton,calculateButton,delete; 
     
     /* FONTS - COLORS *****/
     private Font TextFont = new Font("serif", Font.BOLD, 12);
@@ -233,15 +233,15 @@ public class GUI extends JFrame {
         } );
         
         
-        /* Place Order Button */
-        OrderButton = new JButton("Order");
-        OrderButton.setEnabled(true);
+        /* Delete teams Button */
+        delete = new JButton("Order");
+        delete.setEnabled(false);
         //Add the action Listener - and the code that will hamdle the events
-        OrderButton.addActionListener(new ActionListener(){
+        delete.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                                 
-                    /* place the order */
-                    placeOrder();
+                    /* delete teams the order */
+                    deleteTeams();
                                      
             } 
         } );
@@ -336,7 +336,7 @@ public class GUI extends JFrame {
          
          panelActions1.setBorder(compound);
          panelActions1.add(calculateButton);
-         panelActions1.add(OrderButton);
+         panelActions1.add(delete);
          /* ----------------------------------------------------- */
          
          /* Panel Actions */
@@ -696,12 +696,9 @@ public class GUI extends JFrame {
     }
     
     /** 
-     * This method will create the OrderDetail class ( containing all the quotes 
-     * for boxes of different type - if more than one type for a single order)
-     * and place them all inside
-     * the final order.
+     * This method will delete the teams chosen by the user
      */
-    private void placeOrder(){
+    private void deleteTeams(){
         
         
             
