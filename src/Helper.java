@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -149,8 +150,39 @@ public class Helper {
 		
 		return allTeamNames;
 		
+	}
+	
+	/**
+	 * Finds and removes from the linked list the String provided as a parameter.
+	 * It uses an iterator rather than a extented for loop in order to keep iterating after the remove,
+	 * without a ConcurrentModificationException.
+	 * 
+	 * This method assumes that the linked list contains only one occurrence of the object, i.e. valid input file that contained
+	 * each team name once. Returns true of false.
+	 * 
+	 * @param LinkedList<Team> the list 
+	 * @param String the serach term
+	 * @return boolean found or not
+	 * 
+	 * */
+	public boolean searchDelete(LinkedList<Team> teams, String searchTerm){
+		
+		Iterator<Team> it = teams.iterator();
 		
 		
+		if (teams != null){
+			
+			while(it.hasNext()){
+				
+			    if(it.next().getName().contains(searchTerm))
+			    	
+			        it.remove();
+			        //break;
+			        return true; //works like break;		        
+			   }			    
+		} 
+		
+		return false; //not found		
 	}
 	
 }

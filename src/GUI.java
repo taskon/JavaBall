@@ -504,11 +504,8 @@ public class GUI extends JFrame {
          /* ======================= Collect Data =============================== */
 
         try {
-
-           
-
-            
-            // ******************* Chosen a Team to Delete ********************
+        	
+            // ******************* User Chosen a Team to Delete? ********************
             
             //int flag =0;
             // get the users selection which team to delete
@@ -524,6 +521,7 @@ public class GUI extends JFrame {
                         "ERROR", msg.ERROR_MESSAGE);
             
         }
+        
         
         return dataStatus;
 
@@ -589,7 +587,10 @@ public class GUI extends JFrame {
     /** 
      * This method will delete the teams chosen by the user
      */
-    private void deleteTeam(){
+    @SuppressWarnings("static-access")
+	private void deleteTeam(){
+    	
+    	Helper hlp = new Helper();// contains all methods to search and delete 
     	         
         if ( getData() ){ // if all data are collected and valid 
         	
@@ -600,13 +601,18 @@ public class GUI extends JFrame {
                          "Final Confirmation",
                          JOptionPane.YES_NO_OPTION);
             
-            /* if the user chosses to proceed with the order */
+            /* if the user chooses to proceed delete */
             if (confirmation == 0){
-                
-               
-                // TODO: DELETE
-            	System.out.println(selectedTeamForDeletion + " " + " was deleted " );
-            	 teamDeleted = true;
+                           
+            	// TODO: DELETE
+            	if (hlp.searchDelete(teams, selectedTeamForDeletion)){ // success
+            		msg.showMessageDialog(null, selectedTeamForDeletion + " was deleted.");
+            		System.out.println("suscess");
+            		delete.setEnabled(false);
+            		// TODO: Update everything
+            	}
+            	else
+            		msg.showMessageDialog(null," Something went wrong.... nothing was changed, Please try again...");      	
             } 
         }
         else{	
