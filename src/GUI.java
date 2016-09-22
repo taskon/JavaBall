@@ -72,6 +72,7 @@ public class GUI extends JFrame {
     private ButtonGroup groupForPrinting,groupForSealable,groupForReinforcing;
     
     /* J LISTS ****/
+    final DefaultListModel<String> teamNamesModel = new DefaultListModel();
     private JList teamsToDelete;
     
     /* TEXT AREA ****/
@@ -103,6 +104,7 @@ public class GUI extends JFrame {
     /* MISC FIELDS */
     private String status = " ",type,reinfChoise[],orderID;
     private String selectedTeamForDeletion; // will hold the team chosen for deletion
+    private int selectedTeamIndexForDeletion; // will hold the team's index in the Jlist chosen for deletion
     private int confirmation;
     private Dimension screenSize,frameSize;
     private boolean dataStatus,teamDeleted = true;
@@ -275,11 +277,15 @@ public class GUI extends JFrame {
         } );
         
         //
-        // Create GUI Componentns - Lists
+        // Create GUI Componentns - JLists
         //
         
-        /* List for choosing which team to delete */
-        teamsToDelete = new JList(allTeamNames.toArray()); //create a Jlist populated by the contents of the list holding all team names
+        /* A lList for choosing which team to delete */  
+        
+        for(int i=0; i<allTeamNames.size(); i++)  //fill the list
+        	teamNamesModel.addElement(allTeamNames.get(i)); 
+        
+        teamsToDelete = new JList(teamNamesModel);  //associate with the model    
         teamsToDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         teamsToDelete.setVisible(true);
         /* and the Selection Listener */
@@ -288,6 +294,7 @@ public class GUI extends JFrame {
             
         	// track selections
             selectedTeamForDeletion = (String) teamsToDelete.getSelectedValue();
+            selectedTeamIndexForDeletion = teamsToDelete.getSelectedIndex();
             System.out.println("Selection from List's event-> "+selectedTeamForDeletion);
             // enable delete button as somethong was chosen
             delete.setEnabled(true);
@@ -356,8 +363,6 @@ public class GUI extends JFrame {
                                                                 ,titleFColor);
          
          panelDeleteTeam.setBorder(title);
-         //panelDeleteTeam.add(radioYesR);
-         //panelDeleteTeam.add(radioNoR);
          panelDeleteTeam.add(lblDeleteTeam = new JLabel(labels[10]));
          panelDeleteTeam.add(teamsToDelete);
          /* ----------------------------------------------------- */
@@ -587,7 +592,7 @@ public class GUI extends JFrame {
     /** 
      * This method will delete the teams chosen by the user
      */
-    @SuppressWarnings("static-access")
+    @SuppressWarnings({ "static-access", "unchecked" })
 	private void deleteTeam(){
     	
     	Helper hlp = new Helper();// contains all methods to search and delete 
@@ -605,9 +610,17 @@ public class GUI extends JFrame {
             if (confirmation == 0){
                          
             	if (hlp.searchDelete(teams, selectedTeamForDeletion)){ // success
+            		
             		msg.showMessageDialog(null, selectedTeamForDeletion + " was deleted.");
-            		delete.setEnabled(false);
+            		delete.setEnabled(false);          		
             		// TODO: Update everything
+            		//update the list of teams
+            		teamNamesModel.remove(selectedTeamIndexForDeletion); 
+            		
+            		
+            		
+            		// TODO: update matchList
+            		//showResults(matchList); ---------------- with the new matchlist
             	}
             	else
             		msg.showMessageDialog(null," Something went wrong.... nothing was changed, Please try again...");      	
