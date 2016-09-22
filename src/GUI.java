@@ -647,6 +647,7 @@ public class GUI extends JFrame {
             		}
             		
             		// create new match list and update update matchList
+            		textAreaResults.setText(null);
             		showResults(hlp.updateMatchList(matchList, temp));
             	}
             	else
