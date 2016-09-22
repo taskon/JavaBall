@@ -51,7 +51,7 @@ public class GUI extends JFrame {
                                lblChooseQuantity;
     
     /* BUTTONS *****/
-    private JButton loadTeams,exitButton,calculateButton,delete; 
+    private JButton saveResultsButton,exitButton,loadButton,deleteButton; 
     
     /* FONTS - COLORS *****/
     private Font TextFont = new Font("serif", Font.BOLD, 12);
@@ -73,7 +73,7 @@ public class GUI extends JFrame {
     
     /* J LISTS ****/
     final DefaultListModel<String> teamNamesModel = new DefaultListModel();
-    private JList teamsToDelete;
+    private JList teamsToDeleteList;
     
     /* TEXT AREA ****/
     private TextArea textAreaResults;
@@ -206,6 +206,66 @@ public class GUI extends JFrame {
         //
         // Create GUI Components - Buttons
         //
+               
+       /* Load Results  Button */
+        loadButton = new JButton("Load Results");
+        //The action Listener - and the code that will handle the events
+        loadButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+               
+                loadButton.setCursor(Cursor.getPredefinedCursor(
+                                                        Cursor.WAIT_CURSOR));
+                
+                // disable deletion of teams
+                deleteButton.setEnabled(false);
+                teamsToDeleteList.setEnabled(false);
+                /* load results file */
+                //TODO: create method to load results from file
+
+                loadButton.setCursor(Cursor.getPredefinedCursor(
+                                                        Cursor.DEFAULT_CURSOR));
+
+             }
+        } );
+        
+        
+        /* Delete teams Button */
+        deleteButton = new JButton("Delete Team");
+        deleteButton.setEnabled(false);
+        //Add the action Listener - and the code that will handle the events
+        deleteButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                                
+                    /* delete teams */
+                    deleteTeam();
+                                     
+            } 
+        } );
+        
+        /* Save  Button */
+        saveResultsButton = new JButton("Save Results");
+        saveResultsButton.setEnabled(false);
+        //The action Listener - and the code that will hamdle the events
+        saveResultsButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                
+                if (saveResultsButton.isEnabled()){
+                    
+                    /* get final confirmation */
+                        confirmation = JOptionPane.showConfirmDialog(null,
+                                    "Are you sure you want to save "
+                                     + "results entered?",
+                                     "Final Confirmation",
+                                     JOptionPane.YES_NO_OPTION);
+                        
+                        /* if the user chosses to proceed with the order */
+                        if (confirmation == 0){                            
+                            //TODO: add save method                                                 
+                        }       
+                }                     
+            } 
+            
+        } );
         
         /* Exit  Button */
         exitButton = new JButton("Exit");
@@ -215,65 +275,6 @@ public class GUI extends JFrame {
                 dispose();
                 System.exit(0);
             } 
-        } );
-
-        
-       /* Calculate  Button */
-        calculateButton = new JButton("Calculate");
-        //The action Listener - and the code that will handle the events
-        calculateButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-               
-                calculateButton.setCursor(Cursor.getPredefinedCursor(
-                                                        Cursor.WAIT_CURSOR));
-                /* calculate the order */
-                //calculate();
-
-                calculateButton.setCursor(Cursor.getPredefinedCursor(
-                                                        Cursor.DEFAULT_CURSOR));
-
-             }
-        } );
-        
-        
-        /* Delete teams Button */
-        delete = new JButton("Delete Team");
-        delete.setEnabled(false);
-        //Add the action Listener - and the code that will hamdle the events
-        delete.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                                
-                    /* delete teams */
-                    deleteTeam();
-                                     
-            } 
-        } );
-        
-        /* Confirm Order  Button */
-        loadTeams = new JButton("Confirm Order");
-        loadTeams.setEnabled(false);
-        //The action Listener - and the code that will hamdle the events
-        loadTeams.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                
-                if (loadTeams.isEnabled()){
-                    
-                    /* get final confirmation */
-                        confirmation = JOptionPane.showConfirmDialog(null,
-                                    "Are you sure you want to proceed with the "
-                                     + "order?",
-                                     "Final Confirmation",
-                                     JOptionPane.YES_NO_OPTION);
-                        
-                        /* if the user chosses to proceed with the order */
-                        if (confirmation == 0){
-                            
-                            teamDeleted = true;
-                                                 
-                        }       
-                }                     
-            } 
-            
         } );
         
         //
@@ -285,19 +286,19 @@ public class GUI extends JFrame {
         for(int i=0; i<allTeamNames.size(); i++)  //fill the list
         	teamNamesModel.addElement(allTeamNames.get(i)); 
         
-        teamsToDelete = new JList(teamNamesModel);  //associate with the model    
-        teamsToDelete.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        teamsToDelete.setVisible(true);
+        teamsToDeleteList = new JList(teamNamesModel);  //associate with the model    
+        teamsToDeleteList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        teamsToDeleteList.setVisible(true);
         /* and the Selection Listener */
-        teamsToDelete.addListSelectionListener(new ListSelectionListener() {
+        teamsToDeleteList.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
             
         	// track selections
-            selectedTeamForDeletion = (String) teamsToDelete.getSelectedValue();
-            selectedTeamIndexForDeletion = teamsToDelete.getSelectedIndex();
+            selectedTeamForDeletion = (String) teamsToDeleteList.getSelectedValue();
+            selectedTeamIndexForDeletion = teamsToDeleteList.getSelectedIndex();
             System.out.println("Selection from List's event-> "+selectedTeamForDeletion);
             // enable delete button as somethong was chosen
-            delete.setEnabled(true);
+            deleteButton.setEnabled(true);
             
 
                 
@@ -364,7 +365,7 @@ public class GUI extends JFrame {
          
          panelDeleteTeam.setBorder(title);
          panelDeleteTeam.add(lblDeleteTeam = new JLabel(labels[10]));
-         panelDeleteTeam.add(teamsToDelete);
+         panelDeleteTeam.add(teamsToDeleteList);
          /* ----------------------------------------------------- */
          
          /* Panel Actions 1 */
@@ -382,8 +383,8 @@ public class GUI extends JFrame {
                                   greenLine, compound);
          
          panelActions1.setBorder(compound);
-         panelActions1.add(calculateButton);
-         panelActions1.add(delete);
+         panelActions1.add(loadButton);
+         panelActions1.add(deleteButton);
          /* ----------------------------------------------------- */
          
          /* Panel Actions */
@@ -401,7 +402,7 @@ public class GUI extends JFrame {
                                   greenLine, compound);
          
          panelActions2.setBorder(compound);
-         panelActions2.add(loadTeams);
+         panelActions2.add(saveResultsButton);
          panelActions2.add(exitButton);
          /* ----------------------------------------------------- */
          
@@ -483,7 +484,7 @@ public class GUI extends JFrame {
                 
                 
                 /* enable the place order button */
-                loadTeams.setEnabled(true);
+                saveResultsButton.setEnabled(true);
                 
             }
             
@@ -514,7 +515,7 @@ public class GUI extends JFrame {
             
             //int flag =0;
             // get the users selection which team to delete
-            selectedTeamForDeletion = (String)teamsToDelete.getSelectedValue();
+            selectedTeamForDeletion = (String)teamsToDeleteList.getSelectedValue();
       
             dataStatus = (selectedTeamForDeletion != null) ? true : false; //check if OK
             
@@ -596,8 +597,13 @@ public class GUI extends JFrame {
 	private void deleteTeam(){
     	
     	Helper hlp = new Helper();// contains all methods to search and delete 
+    	boolean dataCollected, enoughTeams;
+    	
+    	// check that all data has been collected and there are enough teams for the tournament
+    	dataCollected = getData();
+    	enoughTeams = (teamNamesModel.size() >=3) ? true : false;
     	         
-        if ( getData() ){ // if all data are collected and valid 
+        if ( dataCollected && enoughTeams ){ // if all data are collected and valid 
         	
         	/* get final confirmation */
             confirmation = JOptionPane.showConfirmDialog(null,
@@ -609,16 +615,20 @@ public class GUI extends JFrame {
             /* if the user chooses to proceed delete */
             if (confirmation == 0){
                          
-            	if (hlp.searchDelete(teams, selectedTeamForDeletion)){ // success
+            	if (hlp.searchDelete(teams, selectedTeamForDeletion)){ // success item was found and deleted
             		
             		msg.showMessageDialog(null, selectedTeamForDeletion + " was deleted.");
-            		delete.setEnabled(false);          		
+            		deleteButton.setEnabled(false);          		
             		// TODO: Update everything
             		//update the list of teams
             		teamNamesModel.remove(selectedTeamIndexForDeletion); 
-            		
-            		
-            		
+            		//check for number of teams in the league
+            		enoughTeams = (teamNamesModel.size() >=3) ? true : false;
+            		if (! enoughTeams){ // if not enough exit        			
+            			msg.showMessageDialog(null,"Less than 3 teams remain - the league is canceled, "
+               		 			+ "The program will now exit!");
+               		 	System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)       			
+            		}          		
             		// TODO: update matchList
             		//showResults(matchList); ---------------- with the new matchlist
             	}
@@ -626,9 +636,9 @@ public class GUI extends JFrame {
             		msg.showMessageDialog(null," Something went wrong.... nothing was changed, Please try again...");      	
             } 
         }
-        else{	
+        else if ( !dataCollected ){	// no team chosen to delete
         	msg.showMessageDialog(null,"Please Choose a team to Delete....");
-        }             
+        }
     }
         
              
