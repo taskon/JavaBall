@@ -596,8 +596,19 @@ public class GUI extends JFrame {
     @SuppressWarnings({ "static-access", "unchecked" })
 	private void deleteTeam(){
     	
+    	ArrayList<String> test = new ArrayList<String>();
+    	test.add("Bayern");
+    	test.add("Neacastle");
+    	test.add("Bayern");
+    	test.add("Portsmouth");
+    	test.add("Newcastle");
+    	test.add("Portmouth");
+    	
+    	
+    	
     	Helper hlp = new Helper();// contains all methods to search and delete 
     	boolean dataCollected, enoughTeams;
+    	String temp=null; //will hold the team to be deleted 
     	
     	// check that all data has been collected and there are enough teams for the tournament
     	dataCollected = getData();
@@ -617,20 +628,26 @@ public class GUI extends JFrame {
                          
             	if (hlp.searchDelete(teams, selectedTeamForDeletion)){ // success item was found and deleted
             		
+            		/*  ---- Update everything ----- */
+            		
+            		temp = selectedTeamForDeletion;
             		msg.showMessageDialog(null, selectedTeamForDeletion + " was deleted.");
             		deleteButton.setEnabled(false);          		
-            		// TODO: Update everything
+   
             		//update the list of teams
             		teamNamesModel.remove(selectedTeamIndexForDeletion); 
+            		
             		//check for number of teams in the league
             		enoughTeams = (teamNamesModel.size() >=3) ? true : false;
+            		
             		if (! enoughTeams){ // if not enough exit        			
             			msg.showMessageDialog(null,"Less than 3 teams remain - the league is canceled, "
                		 			+ "The program will now exit!");
                		 	System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)       			
-            		}          		
-            		// TODO: update matchList
-            		//showResults(matchList); ---------------- with the new matchlist
+            		}
+            		
+            		// create new match list and update update matchList
+            		showResults(hlp.updateMatchList(matchList, temp));
             	}
             	else
             		msg.showMessageDialog(null," Something went wrong.... nothing was changed, Please try again...");      	

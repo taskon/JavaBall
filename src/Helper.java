@@ -185,6 +185,35 @@ public class Helper {
 		return false; //not found		
 	}
 	
+	/**
+	 * Update Match List
+	 * 
+	 * */
+	public ArrayList<String> updateMatchList( ArrayList<String> matchList, String termToRemove ){
+		
+		//matchList.removeAll(Collections.singleton(termToRemove));
+		
+		/* approach 1 */
+		for (int i=0;i<matchList.size();i++){
+			
+			if (matchList.get(i).contains(termToRemove)){ //if the team is found remove all matches that contain this team
+				 
+				 matchList.remove(i);
+				 matchList.remove(i+1);	
+				 
+			 }
+			
+		}
+		
+		/* approach 2*/
+		
+		
+
+
+		return matchList;	
+		
+	}
+	
 }
 		
 
