@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -186,33 +187,43 @@ public class Helper {
 	}
 	
 	/**
-	 * Update Match List
+	 * Update Match List by deleting all matches of the team that was removed by the user. The indexes in which this
+	 * team is found ( along with the next index which is the team's rival in the specific match) are stored in a list
+	 * then this list is sorted in descending order (this way the indices that will be removed in the match list are not affected by shifting)
+	 * and finally the they are removed from the array list holding all matches 
+	 * one by one.  
 	 * 
 	 * */
 	public ArrayList<String> updateMatchList( ArrayList<String> matchList, String termToRemove ){
 		
-		//matchList.removeAll(Collections.singleton(termToRemove));
+		List<Integer> indices = new ArrayList<Integer>(); //will store the pairs of indices for deletion
 		
-		/* approach 1 */
+		/* search for all matches which include the team to delete and store them in indices*/	
 		for (int i=0;i<matchList.size();i++){
 			
-			if (matchList.get(i).contains(termToRemove)){ //if the team is found remove all matches that contain this team
+			if (matchList.get(i).contains(termToRemove)){ 
 				 
-				 matchList.remove(i);
-				 matchList.remove(i+1);	
+				 indices.add(i);
+				 indices.add(i+1);
 				 
 			 }
-			
 		}
+		// sort in descending order so as not to affect the matchList when the specific indices get deleted
+		Collections.sort(indices, Collections.reverseOrder()); 
 		
-		/* approach 2*/
+		//remove the all the indices from matchlist
+		for (int i : indices)
+		    matchList.remove(i);	
 		
-		
-
-
-		return matchList;	
+		return matchList;
 		
 	}
+	
+	/**
+	 * Extracts goals scored from the ResultsIn txt file and outputs a
+	 * 
+	 * */
+	
 	
 }
 		
