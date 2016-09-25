@@ -1,8 +1,7 @@
-/*
- * Represents a Team taking part in the tournament
- * A contructor is used to set the name instead of a setter method for making the class immutable
- * 
- * 
+/**
+ * Represents a Team taking part in the tournament holds information regarding 
+ * team name, goals scored, matches won.
+*
  * */
 public class Team {
 	

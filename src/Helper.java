@@ -13,10 +13,6 @@ import java.util.Map;
 /**
  * Has functionality shared all through the application including:
  * 
- * - FIle I/O
- * - Creates Team objects
- * - 
- * 
  * */
 public class Helper {
 	
@@ -220,9 +216,11 @@ public class Helper {
 	}
 	
 	/**
-	 * Extracts goals scored from the ResultsIn txt file and outputs a
+	 * Extracts goals scored from the ResultsIn txt file 
 	 * 
 	 * */
+	
+	//TODO
 	
 	
 }

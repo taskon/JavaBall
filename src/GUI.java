@@ -31,12 +31,7 @@ public class GUI extends JFrame {
     
     /* LAYOUTS *****/
     GridLayout headerLayout = new GridLayout(1,1);
-    //GridLayout QuantityLayout = new GridLayout(1,2);
-    GridLayout boxSizeLayout = new GridLayout(3,2);
-    //GridLayout gradeOfCardLayout = new GridLayout(1,2);
-    //GridLayout PrintingLayout = new GridLayout(2,2);
     GridLayout deleteTeamLayout = new GridLayout(2,2);
-    //GridLayout SealableLayout = new GridLayout(1,2);
     GridLayout Actions1Layout = new GridLayout(1,2);
     GridLayout resultLayout = new GridLayout(1,1);
     GridLayout Actions2Layout = new GridLayout(1,2);
@@ -44,11 +39,8 @@ public class GUI extends JFrame {
     /* ---------------------- GUI Components ------------------------ */
     
     /* LABELS *****/
-    private JLabel lblCustName,lbHeader,lblBoxSize,lblGradeOfCard,
-                               lblPrinting,lblTypeOfPrint,lblDeleteTeam,
-                               lblSealable,lblStatus,lblWidth,lblHeight,
-                               lblLength,lblTypeOfPrinting,lblPlaceHolder,
-                               lblChooseQuantity;
+    private JLabel lbHeader,lblDeleteTeam,
+                               lblStatus;
     
     /* BUTTONS *****/
     private JButton saveResultsButton,exitButton,loadButton,deleteButton; 
@@ -58,18 +50,6 @@ public class GUI extends JFrame {
     private Font headerFont1 = new Font("Helvetica",Font.BOLD, 20);
     private Font headerFont2 = new Font("Times",Font.PLAIN, 18);
     private Color titleFColor = new Color(153,153,0);
-    
-    /* COMBO BOX *****/
-    private JComboBox chooseGrade,choosePrinting;
-    
-    /* TEXT FIELDS *****/
-    private JTextField txtWidth,txtHeight,txtLength,txtQuantity;
-    
-    /* RADIO BUTTONS *****/
-    private JRadioButton radioYesP,radioNoP,radioYesS,radioNoS,radioYesR,radioNoR;
-    
-    /* RADIO BUTTON GROUPS *****/
-    private ButtonGroup groupForPrinting,groupForSealable,groupForReinforcing;
     
     /* J LISTS ****/
     final DefaultListModel<String> teamNamesModel = new DefaultListModel();
@@ -85,21 +65,9 @@ public class GUI extends JFrame {
     private TitledBorder title = null;
     private Border compound,raisedbevel, loweredbevel;
 
-    /* SLIDERS */
-    private JSlider SlChooseQuantity;
-    private int boxMin = 0;
-    private int boxMax = 100;
-    private int boxInit = 0;
-
     /* MESSAGES */
     private JOptionPane msg;
 
-    /* BOX MODELING FIELDS */
-    private double width,height,length;
-    private int grade,typeOfPrint,boxQuantity;
-    private boolean colourPrint,reinforcedBottom = false,sealableTops,
-                reinforcedCorners = false,reinforcment = false;
-    private String boxType;
     
     /* MISC FIELDS */
     private String status = " ",type,reinfChoise[],orderID;
@@ -108,7 +76,6 @@ public class GUI extends JFrame {
     private int confirmation;
     private Dimension screenSize,frameSize;
     private boolean dataStatus,teamDeleted = true;
-    private double boxCost,orderCost;
     private LinkedList<Team> teams = new LinkedList<Team>(); // will hold all the team objects
     private ArrayList<String> matchList = new ArrayList<String>(); //will hold all matches
     private ArrayList<String> allTeamNames; //will hold all team names
@@ -150,7 +117,7 @@ public class GUI extends JFrame {
     	}
     	catch (FileNotFoundException e) { // the TeamsIn file cannot be found
     		
-   		 	msg.showMessageDialog(null,"The filename or directory name is incorrect or does not exist, "
+   		 	msg.showMessageDialog(null,"The input File name is incorrect or does not exist, Please try agai "
    		 			+ "The program will now exit!");
    		 	System.exit(1);//exit with status 1 as further clean up is needed (close bufferReader)
    	 }
@@ -199,8 +166,8 @@ public class GUI extends JFrame {
         
     	
          
-         String[] labels = {" Results Processing of JavaBall Matches","Box Size","Width","Height","Length","Grade Of Card",
-                               "Sealable","Status","Customer Name"," ","Choose a team to Delete"};
+         String[] labels = {" Results Processing of JavaBall Matches","","","","","",
+                               "","",""," ","Choose a team to Delete"};
          String[] printing = {null,"1","2","3"};
         
         //
@@ -431,74 +398,11 @@ public class GUI extends JFrame {
         cp.add(panelActions2);
         cp.add(new JSeparator());
 
-        /* Set the Size of the window and then Display it */
-        
+        /* Set the Size of the window and then Display it */       
         setWindow();
         this.setVisible(true); 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
-    /** 
-     * this Method Calculates all the values entered by the user 
-     * calculates the correctnes of the order. Is used in the 
-     * Calculate button and the next order button
-     */
-    private boolean calculate(){
-        
-        boolean temp;
-        
-        /* collect the data */
-        boolean ok = getData();
-        boolean flag;
-        
-        /* if the getData method returned true, create the Box,
-         * display the status
-         * and proceed with the order
-         */
-        if (ok){
-            
-            if (teamDeleted){
-                
-                /* create the Order */
-                //order = new Order();               
-            }
-            
-            
-            /* create the box */
-            
-            
-            /* check the returned type */
-            if (boxType.equals("0")){ // NOT A VALID BOX
-                
-                msg.showMessageDialog(null, "This Type of box cannot " +
-                        " be created.Please choose another type!",
-                        "Warning", msg.WARNING_MESSAGE);
-                
-            } else{  // Box type is valid ( 1 to 6 )
-                
-                /* get the cost of the Box */
-               // boxCost = box.resolveCost();
-                
-                /* show the status to the user */
-                //showStatus(boxType,boxCost,orderCost,OrderID);
-                
-                
-                /* enable the place order button */
-                saveResultsButton.setEnabled(true);
-                
-            }
-            
-            temp =  true;           
-        }
-        else{
-            
-            temp = false;
-        }
-        
-        return temp;
-        
-    }
-    
     
     /**
      * The method of the GUI class that will collect all data and then
@@ -511,7 +415,7 @@ public class GUI extends JFrame {
 
         try {
         	
-            // ******************* User Chosen a Team to Delete? ********************
+            // ******************* User Chosen a Team to Delete? and which ********************
             
             //int flag =0;
             // get the users selection which team to delete
@@ -528,6 +432,9 @@ public class GUI extends JFrame {
             
         }
         
+        // ******************* Collect results entered by user ********************
+        
+        //TODO: Collect team match results entered by the user
         
         return dataStatus;
 
@@ -567,35 +474,12 @@ public class GUI extends JFrame {
          }        
     }
     
-    /**
-     * This method check's if width - height - and length are valid (between 10 cm and 1 meters)
-     * and if they are not throws a custom exception ( InvalidInputException )
-     *
-     * The validation of empty fields that are required and non nueric input 
-     * is done using NumberFormatException.  
-     */
-    private void checkW_H_L(double width,double height,double length)
-                                               //  throws InvalidInputException
-    { 
-    
-        
-        // check the correct boundaries of the user input
-        Boolean invalidW_H_L = ( ( width < 10 || width > 200 )  ||
-                                   ( height < 10 || height > 200 ) || 
-                                   ( length < 10 || length > 200 ) ) ? true : false;
-        
-        // if they are invalid throw a custom exception
-      //  if ( invalidW_H_L )
-          //  throw new InvalidInputException();
-    
-    }
-    
     /** 
      * This method will delete the teams chosen by the user
      */
     @SuppressWarnings({ "static-access", "unchecked" })
 	private void deleteTeam(){
-    	
+    	/*
     	ArrayList<String> test = new ArrayList<String>();
     	test.add("Bayern");
     	test.add("Neacastle");
@@ -603,7 +487,7 @@ public class GUI extends JFrame {
     	test.add("Portsmouth");
     	test.add("Newcastle");
     	test.add("Portmouth");
-    	
+    	*/
     	
     	
     	Helper hlp = new Helper();// contains all methods to search and delete 
